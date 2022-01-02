@@ -1,0 +1,36 @@
+CAPI=2:
+name: chuckb:examples:alchitry-au-fusesoc:1.0.0
+description: An example adder demonstrating fusesoc use on Alchitry Au Io
+
+filesets:
+  rtl:
+    files:
+      - rtl/adder.vhdl
+      - rtl/au_top.vhdl
+    file_type: vhdlSource
+
+  alchitry_au_io:
+    files:
+      - constraints/alchitry.xdc
+      - constraints/au.xdc
+      - constraints/au_io.xdc
+    file_type: xdc
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - rtl
+    toplevel: au_top
+
+  # The "synth" target synthesizes the design. (It could have any name.)
+  synth:
+    <<: *default
+    description: Synthesize the design for an Alchitry Au FPGA board
+    default_tool: vivado
+    filesets_append:
+      - alchitry_au_io
+    tools:
+      vivado:
+        part: xc7a35tftg256-1
