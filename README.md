@@ -619,6 +619,6 @@ Done.
 [FuseSoC]:              https://fusesoc.readthedocs.io/en/stable/index.html
 [command-line loader]:  https://github.com/chuckb/alchitry-loader
 [Au Io]:                https://www.sparkfun.com/products/16525
-[adder.vhdl]:           (rtl/adder.vhdl)
-[Makefile]:             (Makefile)
+[adder.vhdl]:           rtl/adder.vhdl
+[Makefile]:             Makefile
 [Vivado]:               https://www.xilinx.com/support/download.html
