@@ -5,7 +5,7 @@ bindir := $(builddir)/chuckb_examples_alchitry-au-fusesoc_1.0.0/synth-vivado/chu
 binfile := $(bindir)/au_top.bin
 bitfile := $(bindir)/au_top.bit
 source := $(wildcard ./rtl/*.vhdl)
-constraints := $(wildcard ./data/*.xdc)
+constraints := $(wildcard ./constraints/*.xdc)
 test := $(wildcard ./test/*.vhdl)
 
 $(binfile): $(source) $(constraints) $(testmapping)
