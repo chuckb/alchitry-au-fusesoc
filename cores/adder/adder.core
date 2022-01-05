@@ -1,0 +1,50 @@
+CAPI=2:
+name: chuckb:examples:adder:1.0.0
+description: A fusesoc template - an example adder demonstrating fusesoc, vunit, interactive sims, and deployment to multiple boards.
+
+# Template credit to https://github.com/E4tHam/fusesoc_template
+
+# Source Files https://fusesoc.readthedocs.io/en/stable/user/build_system/core_files.html#targets
+filesets:
+  # default
+  rtl:
+    files:
+      - rtl/adder.vhdl: {file_type: vhdlSource}
+  # boards
+  alchitry_au_io:
+    files:
+      - boards/alchitry_au_io/rtl/top.vhdl: {file_type: vhdlSource}
+      - boards/alchitry_au_io/constraints/alchitry.xdc: {file_type: xdc}
+      - boards/alchitry_au_io/constraints/au_io.xdc: {file_type: xdc}
+      - boards/alchitry_au_io/constraints/au.xdc: {file_type: xdc}
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - rtl
+
+  alchitry_au_io: # fusesoc run --target alchitry_au_io --build chuckb:examples:adder
+    <<: *default
+    description: Synthesize and load design for Alchitry Au Io board. Requires alchitry-loader https://github.com/chuckb/alchitry-loader installed.
+    default_tool: vivado
+    hooks:
+      pre_build: [vunit]
+      post_build: [alchitry-loader]
+    filesets_append:
+      - alchitry_au_io
+    toplevel: top
+    tools:
+      vivado:
+        part: xc7a35tftg256-1
+
+scripts:
+  vunit:
+    cmd: [../../../tb/run.py]
+
+  alchitry-loader:
+    # We wind up in work directory ./build/chuckb_examples_adder_1.0.0/alchitry_au_io-vivado
+    # TODO: is there a way to clean this up?
+    cmd: [alchitry-loader, -p, ../../../bin/au_loader.bin, -r, ./chuckb_examples_adder_1.0.0.runs/impl_1/top.bin]
+
