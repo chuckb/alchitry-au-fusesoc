@@ -5,8 +5,6 @@ library ieee;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-library rtl_lib;
-
 entity adder_tb is
   generic (runner_cfg : string);
 end entity;
@@ -35,7 +33,7 @@ begin
     wait;
   end process;
 
-  dut : entity rtl_lib.adder(rtl)
+  dut : entity work.adder(rtl)
   port map (
     A => A,
     B => B,

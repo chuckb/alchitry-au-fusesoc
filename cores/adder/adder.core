@@ -17,6 +17,11 @@ filesets:
       - boards/alchitry_au_io/constraints/alchitry.xdc: {file_type: xdc}
       - boards/alchitry_au_io/constraints/au_io.xdc: {file_type: xdc}
       - boards/alchitry_au_io/constraints/au.xdc: {file_type: xdc}
+  # tests
+  tb:
+    files:
+      - tb/adder_tb.vhdl: {file_type: vhdlSource}
+      - tb/runner.py: {file_type: user, copyto: runner.py}
 
 targets:
   # The "default" target is special in FuseSoC and used in dependencies.
@@ -25,13 +30,19 @@ targets:
     filesets:
       - rtl
 
-  alchitry_au_io: # fusesoc run --target alchitry_au_io --build chuckb:examples:adder
+  # Load into RAM:
+  # fusesoc run --target alchitry_au_io chuckb:examples:adder
+  # Load into Flash:
+  # fusesoc run --target alchitry_au_io --flag flash chuckb:examples:adder
+  alchitry_au_io:
     <<: *default
     description: Synthesize and load design for Alchitry Au Io board. Requires alchitry-loader https://github.com/chuckb/alchitry-loader installed.
     default_tool: vivado
     hooks:
-      pre_build: [vunit]
-      post_build: [alchitry-loader]
+      pre_run:
+        - flash? (alchitry-loader-flash)
+        - "!flash? (alchitry-loader-ram)"
+        - terminate
     filesets_append:
       - alchitry_au_io
     toplevel: top
@@ -39,12 +50,28 @@ targets:
       vivado:
         part: xc7a35tftg256-1
 
-scripts:
-  vunit:
-    cmd: [../../../tb/run.py]
+  test:  # fusesoc run --target test chuckb:examples:adder
+    <<: *default
+    default_tool: vunit
+    # Override runner settings to shut up compiler warnings
+    tools:
+      vunit:
+        vunit_runner: runner.py
+    filesets_append:
+      - tb
+    toplevel: adder_tb
 
-  alchitry-loader:
+scripts:
+  alchitry-loader-ram:
     # We wind up in work directory ./build/chuckb_examples_adder_1.0.0/alchitry_au_io-vivado
     # TODO: is there a way to clean this up?
     cmd: [alchitry-loader, -p, ../../../bin/au_loader.bin, -r, ./chuckb_examples_adder_1.0.0.runs/impl_1/top.bin]
+
+  alchitry-loader-flash:
+    # We wind up in work directory ./build/chuckb_examples_adder_1.0.0/alchitry_au_io-vivado
+    # TODO: is there a way to clean this up?
+    cmd: [alchitry-loader, -p, ../../../bin/au_loader.bin, -f, ./chuckb_examples_adder_1.0.0.runs/impl_1/top.bin]
+
+  terminate: # Stops execution from continuing...in this case, to prevent Vivado loader from running.
+    cmd: [python3, -c, "exit(1)"]
 
