@@ -63,7 +63,7 @@ All passed!
 fusesoc run --target sim-gui chuckb:examples:adder
 ```
 ### Result
-<img src="image/cocotb_pygame_gui.png" />
+<img src="image/cocotb_pygame_gui.png" alt="Interactive VHDL Adder Simulation" width="300" />
 
 
 [Alchitry Au]:          https://www.sparkfun.com/products/16527
