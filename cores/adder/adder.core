@@ -22,6 +22,20 @@ filesets:
     files:
       - tb/adder_tb.vhdl: {file_type: vhdlSource}
       - tb/runner.py: {file_type: user, copyto: runner.py}
+  # GUI simulation
+  sim_gui:
+    files:
+      - sim/gui/controls.py: {file_type: user, copyto: controls.py}
+      - sim/gui/datamonitor.py: {file_type: user, copyto: datamonitor.py}
+      - sim/gui/gui.py: {file_type: user, copyto: gui.py}
+      - sim/gui/runner.py: {file_type: user, copyto: runner.py}
+      - sim/gui/requirements.txt: {file_type: user, copyto: requirements.txt}
+      - sim/gui/images/led_off.png: {file_type: user, copyto: images/led_off.png}
+      - sim/gui/images/led_on.png: {file_type: user, copyto: images/led_on.png}
+      - sim/gui/images/switch_off.png: {file_type: user, copyto: images/switch_off.png}
+      - sim/gui/images/switch_off_s.png: {file_type: user, copyto: images/switch_off_s.png}
+      - sim/gui/images/switch_on.png: {file_type: user, copyto: images/switch_on.png}
+      - sim/gui/images/switch_on_s.png: {file_type: user, copyto: images/switch_on_s.png}
 
 targets:
   # The "default" target is special in FuseSoC and used in dependencies.
@@ -50,7 +64,8 @@ targets:
       vivado:
         part: xc7a35tftg256-1
 
-  test:  # fusesoc run --target test chuckb:examples:adder
+  # Run VUnit test bench
+  test: # fusesoc run --target test chuckb:examples:adder
     <<: *default
     default_tool: vunit
     # Override runner settings to shut up compiler warnings
@@ -60,6 +75,19 @@ targets:
     filesets_append:
       - tb
     toplevel: adder_tb
+
+  # Run interactive GUI test bench
+  sim-gui: # fusesoc run --target sim-gui chuckb:examples:adder
+    <<: *default
+    default_tool: ghdl
+    hooks:
+      pre_run:
+        - run-cocotb-gui-req
+        - run-cocotb-gui
+        - terminate
+    filesets_append:
+      - sim_gui
+    toplevel: adder
 
 scripts:
   alchitry-loader-ram:
@@ -75,3 +103,8 @@ scripts:
   terminate: # Stops execution from continuing...in this case, to prevent Vivado loader from running.
     cmd: [python3, -c, "exit(1)"]
 
+  run-cocotb-gui: # Run the cocotb ghdl simulation for the GUI
+    cmd: [python3, runner.py]
+
+  run-cocotb-gui-req: # Make sure the GUI simulation has python dependencies met
+    cmd: [pip, install, -r, requirements.txt]
