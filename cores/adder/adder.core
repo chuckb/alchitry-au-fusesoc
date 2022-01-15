@@ -43,6 +43,14 @@ filesets:
       - sim/gui/images/switch_on.png: {file_type: user, copyto: images/switch_on.png}
       - sim/gui/images/switch_on_s.png: {file_type: user, copyto: images/switch_on_s.png}
 
+  sim_wave:
+    files:
+      - sim/wave/top.vhdl: {file_type: vhdlSource}
+
+  helpers:
+    files:
+      - ../scripts/gtkwave.py: {file_type: user, copyto: gtkwave.py}
+
 targets:
   # The "default" target is special in FuseSoC and used in dependencies.
   # The "&default" is a YAML anchor referenced later.
@@ -114,6 +122,27 @@ targets:
       - sim_gui
     toplevel: adder
 
+  # Run simulation
+  sim: &sim # fusesoc run --target sim chuckb:examples:adder
+    <<: *default
+    default_tool: ghdl
+    filesets_append:
+      - sim_wave
+    toplevel: top
+    tools:
+      ghdl:
+        run_options:
+          [--vcd=adder.vcd]
+
+  waves:
+    <<: *sim
+    filesets_append:
+      - sim_wave
+      - helpers
+    hooks:
+      post_run:
+        - gtkwave
+
 scripts:
   alchitry-loader-ram:
     # We wind up in work directory ./build/chuckb_examples_adder_1.0.0/alchitry_au_io-vivado
@@ -136,3 +165,6 @@ scripts:
 
   mimas-v2-loader-flash:
     cmd: [python3, mimasconfig.py, /dev/ttyACM0, top.bin]
+
+  gtkwave: # Show wave forms with GTKWave.
+    cmd: [python3, gtkwave.py, adder.vcd]

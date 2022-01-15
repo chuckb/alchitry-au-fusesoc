@@ -20,6 +20,8 @@ This repo demonstrates:
 
 - Using [Cocotb], [pygame], and [ghdl] to build an interactive test bench.
 
+- Using GTKWave to view wave forms from ghdl simulation.
+
 ## Prerequisites
 - Tested on Linux ([Lubuntu] guest on Windows 10 host via [Virtualbox] to be specific)
 - Alchitry [command-line loader] (you must build the binary)
@@ -83,6 +85,14 @@ fusesoc run --target sim-gui chuckb:examples:adder
 ```
 ### Result
 <img src="image/cocotb_pygame_gui.png" alt="Interactive VHDL Adder Simulation" width="300" />
+
+
+## Running GTKWave waveform viewer
+```
+fusesoc run --target waves chuckb:examples:adder
+```
+### Result
+<img src="image/gtkwave.jpg" alt="GTKWave wave form viewer of adder" width="600" />
 
 
 [Alchitry Au]:          https://www.sparkfun.com/products/16527
