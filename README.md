@@ -7,11 +7,12 @@ This repo is a survey of open source projects that can be used to facilitate sof
 This repo demonstrates:
 - A thoughtfully designed, multi-target project directory structure for FPGA cores (inspiration credit to [E4tHam]).
 
-- Demonstrate a basic adder implemented across different board types/chips, using the [FuseSoC] build system to drive synthesis, place and route, writing and loading a bin file using different backends.
-    - [Alchitry Au] FPGA board with the [Au Io] module installed. The deployed design will demonstrate use of the 4-bit binary added implemented in [adder.vhdl]. The right 4 switches of the right bank and the right 4 switches of the center bank are inputs A and B respectively. The right 5 LEDs of the left most LED bank will show the X output. [FuseSoC] will call Vivado in batch mode without use of the Vivado GUI.
-        - Using FuseSoC flags to conditionally load the design into RAM or flash and while overriding the Vivado programmer.  Typically, calling [FuseSoC] in the run phase will cause the Vivado hardware loader platform to run once the binary has been built. However, the Alchitry board is not supported (as of this writing) by the Vivado loader tool. Alchitry has its own [command-line loader]. A pre-run script was added to load the binary after building, and then terminate prior to handing off to the Vivado loader. This also makes it so one can pass `--run` on the command line after building and the alchitry-loader will load an already built bin file (if re-loading to RAM is desired).
-    - [Mimas V2] FPGA board using Xilinx ISE and custom loader.
-    - In progress (one or both to support VHDL on Lattice ICE40 chips):
+- A basic adder implemented across different board types/chips, using the [FuseSoC] build system to drive synthesis, place and route, writing and loading a bin file using different backends.
+    - [Alchitry Au] FPGA board with the [Au Io] module installed using the Vivado backend. The deployed design will demonstrate use of the 4-bit binary added implemented in [adder.vhdl]. The right 4 switches of the right bank and the right 4 switches of the center bank are inputs A and B respectively. The right 5 LEDs of the left most LED bank will show the X output. [FuseSoC] will call Vivado in batch mode without use of the Vivado GUI.
+        - FuseSoC flags are used to conditionally load the design into RAM or flash.
+        - Typically, calling [FuseSoC] in the run phase for Vivado will cause the Vivado hardware loader platform to run once the binary has been built. However, the Alchitry board is not supported (as of this writing) by the Vivado loader tool. Alchitry has its own [command-line loader]. A pre-run script was added to load the binary after building, and then terminate prior to handing off to the Vivado loader. This also makes it so one can pass `--run` on the command line after building and the alchitry-loader will load an already built bin file (if re-loading to RAM is desired).
+    - [Mimas V2] FPGA board using Xilinx ISE and custom loader. The right 4 switches is the A bank. The left 4 is the B bank. X result will display on LEDs D4-D8.
+    - In progress (one or both examples to support VHDL on Lattice ICE40 chips):
         - [Nandland Go] FPGA board using open source Icestorm and a custom VHDL -> Verilog generator.
         - iCEcube2 backend.
 
@@ -40,6 +41,16 @@ fusesoc run --target alchitry_au_io --flag flash chuckb:examples:adder
 ### Result
 #### 2 + 2 = 4
 <img alt="2 + 2 = 4" src="image/au_adder.jpg" />
+
+
+## Running On Numato Lab Mimas V2
+- To build and load the design into flash
+```
+fusesoc run --target mimas_v2 chuckb:examples:adder
+```
+### Result
+#### 2 + 2 = 4
+<img alt="2 + 2 = 4" src="image/mimas_adder.png" />
 
 
 ## Running VUnit test bench
