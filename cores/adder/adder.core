@@ -17,6 +17,12 @@ filesets:
       - boards/alchitry_au_io/constraints/alchitry.xdc: {file_type: xdc}
       - boards/alchitry_au_io/constraints/au_io.xdc: {file_type: xdc}
       - boards/alchitry_au_io/constraints/au.xdc: {file_type: xdc}
+  mimas_v2:
+    files:
+      - boards/mimas_v2/rtl/top.vhdl: {file_type: vhdlSource}
+      - boards/mimas_v2/constraints/constraints.ucf: {file_type: UCF}
+      - boards/mimas_v2/constraints/options.tcl: {file_type: tclSource}
+      - boards/mimas_v2/scripts/mimasconfig.py: {file_type: user, copyto: mimasconfig.py}
   # tests
   tb:
     files:
@@ -64,6 +70,25 @@ targets:
       vivado:
         part: xc7a35tftg256-1
 
+  # fusesoc run --target mimas_v2 chuckb:examples:adder
+  mimas_v2:
+    <<: *default
+    description: Synthesize and load design for Mimas V2 board.
+    default_tool: ise
+    filesets_append:
+      - mimas_v2
+    hooks:
+      pre_run:
+        - mimas-v2-loader-flash
+        - terminate
+    tools:
+      ise:
+        family  : Spartan6
+        device  : xc6slx9
+        package : csg324
+        speed   : -2
+    toplevel: top
+
   # Run VUnit test bench
   test: # fusesoc run --target test chuckb:examples:adder
     <<: *default
@@ -108,3 +133,6 @@ scripts:
 
   run-cocotb-gui-req: # Make sure the GUI simulation has python dependencies met
     cmd: [pip, install, -r, requirements.txt]
+
+  mimas-v2-loader-flash:
+    cmd: [python3, mimasconfig.py, /dev/ttyACM0, top.bin]

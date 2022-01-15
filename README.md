@@ -1,25 +1,33 @@
-# Versatile FuseSoC with VUnit, Cocotb, Alchitry Au, and Vivado
+# Versatile FuseSoC and Open Source FPGA Tools
 
 ## Overview
+
+This repo is a survey of open source projects that can be used to facilitate software engineering of FPGA projects.
 
 This repo demonstrates:
 - A thoughtfully designed, multi-target project directory structure for FPGA cores (inspiration credit to [E4tHam]).
 
-- Using the [FuseSoC] build system to synthesize, place and route, write and load a bin file to the [Alchitry Au] FPGA board with the [Au Io] module installed. The deployed design will demonstrate use of the 4-bit binary added implemented in [adder.vhdl]. The right 4 switches of the right bank and the right 4 switches of the center bank are inputs A and B respectively. The right 5 LEDs of the left most LED bank will show the X output. [FuseSoC] will call Vivado in batch mode without use of the Vivado GUI.
+- Demonstrate a basic adder implemented across different board types/chips, using the [FuseSoC] build system to drive synthesis, place and route, writing and loading a bin file using different backends.
+    - [Alchitry Au] FPGA board with the [Au Io] module installed. The deployed design will demonstrate use of the 4-bit binary added implemented in [adder.vhdl]. The right 4 switches of the right bank and the right 4 switches of the center bank are inputs A and B respectively. The right 5 LEDs of the left most LED bank will show the X output. [FuseSoC] will call Vivado in batch mode without use of the Vivado GUI.
+        - Using FuseSoC flags to conditionally load the design into RAM or flash and while overriding the Vivado programmer.  Typically, calling [FuseSoC] in the run phase will cause the Vivado hardware loader platform to run once the binary has been built. However, the Alchitry board is not supported (as of this writing) by the Vivado loader tool. Alchitry has its own [command-line loader]. A pre-run script was added to load the binary after building, and then terminate prior to handing off to the Vivado loader. This also makes it so one can pass `--run` on the command line after building and the alchitry-loader will load an already built bin file (if re-loading to RAM is desired).
+    - [Mimas V2] FPGA board using Xilinx ISE and custom loader.
+    - In progress (one or both to support VHDL on Lattice ICE40 chips):
+        - [Nandland Go] FPGA board using open source Icestorm and a custom VHDL -> Verilog generator.
+        - iCEcube2 backend.
 
-- Test automation, driven by [FuseSoC], using the [VUnit] python library, overriding the VUnit configuration process by passing in compilation switches prior to execution.
+- Test automation, driven by [FuseSoC], using the [VUnit] python library, overriding the VUnit configuration process by passing in compilation switches prior to execution (to suppress warnings).
 
-- Using FuseSoC flags to conditionally load the design into RAM or flash and while overriding the Vivado programmer.  Typically, calling [FuseSoC] in the run phase will cause the Vivado hardware loader platform to run once the binary has been built. However, the Alchitry board is not supported (as of this writing) by the Vivado loader tool. Alchitry has its own [command-line loader]. A pre-run script was added to load the binary after building, and then terminate prior to handing off to the Vivado loader. This also makes it so one can pass `--run` on the command line after building and the alchitry-loader will load an already built bin file (if re-loading to RAM is desired).
-
-- Using Cocotb, pygame, and ghdl to build an interactive test bench.
+- Using [Cocotb], [pygame], and [ghdl] to build an interactive test bench.
 
 ## Prerequisites
-- Tested on Linux (Lubuntu guest on Windows 10 host via Virtualbox to be specific)
+- Tested on Linux ([Lubuntu] guest on Windows 10 host via [Virtualbox] to be specific)
 - Alchitry [command-line loader] (you must build the binary)
-- [Vivado]
+- [Vivado] (to run the Alchitry example)
 - [FuseSoC python module] `pip install fusesoc` (and Python, of course)
 - [VUnit] python module `pip install vunit_hdl`
-
+- [ISE] (to run the Mimas V2 example)
+- (In progress) Ice tools (to run the Nandland Go example) `apt install yosys nextpnr-ice40 fpga-icestorm` and/or iCEcube2
+`
 ## Running On Alchitry Au Io
 - To build and load the design into RAM
 ```
@@ -75,3 +83,10 @@ fusesoc run --target sim-gui chuckb:examples:adder
 [VUnit]:                https://vunit.github.io/
 [FuseSoC python module]: https://github.com/olofk/fusesoc
 [E4tHam]:               https://github.com/E4tHam/fusesoc_template
+[Mimas V2]:             https://numato.com/product/mimas-v2-spartan-6-fpga-development-board-with-ddr-sdram/
+[Cocotb]:               https://docs.cocotb.org/en/stable/
+[pygame]:               https://www.pygame.org/wiki/about
+[ghdl]:                 https://ghdl.github.io/ghdl/
+[ISE]:                  https://www.xilinx.com/products/design-tools/ise-design-suite.html
+[Lubuntu]:              https://www.osboxes.org/lubuntu/
+[Virtualbox]:           https://www.virtualbox.org/
