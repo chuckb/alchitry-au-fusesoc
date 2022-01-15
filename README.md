@@ -20,7 +20,7 @@ This repo demonstrates:
 
 - Using [Cocotb], [pygame], and [ghdl] to build an interactive test bench.
 
-- Using GTKWave to view wave forms from ghdl simulation.
+- Using [GTKWave] to view wave forms from ghdl simulation.
 
 ## Prerequisites
 - Tested on Linux ([Lubuntu] guest on Windows 10 host via [Virtualbox] to be specific)
@@ -29,6 +29,7 @@ This repo demonstrates:
 - [FuseSoC python module] `pip install fusesoc` (and Python, of course)
 - [VUnit] python module `pip install vunit_hdl`
 - [ISE] (to run the Mimas V2 example)
+- [GTKWave] to view waveforms of simulation
 - (In progress) Ice tools (to run the Nandland Go example) `apt install yosys nextpnr-ice40 fpga-icestorm` and/or iCEcube2
 `
 ## Running On Alchitry Au Io
@@ -111,3 +112,4 @@ fusesoc run --target waves chuckb:examples:adder
 [ISE]:                  https://www.xilinx.com/products/design-tools/ise-design-suite.html
 [Lubuntu]:              https://www.osboxes.org/lubuntu/
 [Virtualbox]:           https://www.virtualbox.org/
+[GTKWave]:              http://gtkwave.sourceforge.net/gtkwave.pdf
